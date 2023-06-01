@@ -44,6 +44,10 @@ const userSchema = new Schema(
       type: String,
       
     },
+    bucket_list:{
+      type: Schema.Types.ObjectId, 
+      ref: 'BucketList' 
+    }
     
   },
   {

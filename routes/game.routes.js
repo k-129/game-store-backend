@@ -60,34 +60,34 @@ router.get('/games/:gameId', async (req,res)=>{
 
 router.put('/games/:gameId', async (req, res)=>{
     const {gameId} = req.params;
-    const {title, description} = req.body;
+    const {title, thumbnail, short_description, game_url, genre, platform, publisher, developer, release_date, freetogame_profile_url} = req.body;
 
-    if(!mongoose.Types.ObjectId.isValid(projectId)){
+    if(!mongoose.Types.ObjectId.isValid(gameId)){
        res.status(400).json({message: 'Specified Id is not valid'}); 
        return; 
     }
 
     try{
-        let updatedProject = await Project.findByIdAndUpdate(gameId, 
-        {title, description}, {new: true});
-        res.json(updatedProject);
+        let updatedGame = await Game.findByIdAndUpdate(gameId, 
+        {title, thumbnail, short_description, game_url, genre, platform, publisher, developer, release_date, freetogame_profile_url}, {new: true});
+        res.json(updatedGame);
     }
     catch(error){
         res.json(error);
     }
 });
 
-router.delete('/projects/:projectId', async(req,res)=>{
-    const {projectId} = req.params;
+router.delete('/games/:gameId', async(req,res)=>{
+    const {gameId} = req.params;
 
-    if(!mongoose.Types.ObjectId.isValid(projectId)){
+    if(!mongoose.Types.ObjectId.isValid(gameId)){
         res.status(400).json({message: 'Specified Id is not valid'}); 
         return; 
     }
 
     try{
-        await Project.findByIdAndRemove(projectId);
-        res.json({message: `Project with ${projectId} is removed.`})
+        await Game.findByIdAndRemove(gameId);
+        res.json({message: `Project with ${gameId} is removed.`})
     }
     catch(error){
         res.json(error);
