@@ -5,14 +5,14 @@ const mongoose = require('mongoose');
 // Require Data Models
 const Game = require('../models/Game.model');
 
-// POST /api/projects ROUTE that Creates a new project
+// POST ROUTE that Creates a new game
 
 router.post('/games', async (req,res)=>{
-    const {title, description} = req.body;
+    const {title, thumbnail, short_description, game_url, genre, platform, publisher, developer, release_date, freetogame_profile_url} = req.body;
 
     try{
-        // We wait until we have the status of the creation of Project to make the next step
-        let response = await Game.create({title, description, tasks: []});
+        // We wait until we have the status of the creation of games to make the next step
+        let response = await Game.create({title, thumbnail, short_description, game_url, genre, platform, publisher, developer, release_date, freetogame_profile_url});
         // Send the response as a json file, because we're making an API
         res.json(response);
     }
@@ -23,22 +23,23 @@ router.post('/games', async (req,res)=>{
 
 });
 
-// GET /api/projects ROUTE that Lists the Projects
-router.get('/projects', async(req,res)=>{
+// GET ROUTE that Lists the Projects
+router.get('/games', async(req,res)=>{
     try{
-        let allProjects = await Project.find().populate('tasks');
-        res.json(allProjects);
+        let allGames = await Game.find();
+        res.json(allGames);
+        console.log(allGames);
     }
     catch(error){
         res.json(error);
     }
 });
 
-// GET /api/projects/:projectId to display specific info of a Project
-router.get('/projects/:projectId', async (req,res)=>{
-    const {projectId} = req.params;
+// GET ROUTE to display specific info of a game
+router.get('/games/:gameId', async (req,res)=>{
+    const {gameId} = req.params;
 
-    if(!mongoose.Types.ObjectId.isValid(projectId)){
+    if(!gameId){
         // status of 2xx is successful.
         // error with 4xx is client-side.
         // error with 5xx is server-side 
@@ -47,9 +48,8 @@ router.get('/projects/:projectId', async (req,res)=>{
     }
 
     try{
-        let foundProject = await Project.findById(projectId)
-        .populate('tasks');
-        res.status(200).json(foundProject);
+        let foundGame = await Game.findById(gameId);
+        res.status(200).json(foundGame);
     }
     catch(error){
         res.json(error);
@@ -58,8 +58,8 @@ router.get('/projects/:projectId', async (req,res)=>{
 
 // PUT /api/projects/:projectId to update info of a Project
 
-router.put('/projects/:projectId', async (req, res)=>{
-    const {projectId} = req.params;
+router.put('/games/:gameId', async (req, res)=>{
+    const {gameId} = req.params;
     const {title, description} = req.body;
 
     if(!mongoose.Types.ObjectId.isValid(projectId)){
@@ -68,7 +68,7 @@ router.put('/projects/:projectId', async (req, res)=>{
     }
 
     try{
-        let updatedProject = await Project.findByIdAndUpdate(projectId, 
+        let updatedProject = await Project.findByIdAndUpdate(gameId, 
         {title, description}, {new: true});
         res.json(updatedProject);
     }

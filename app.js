@@ -19,7 +19,7 @@ const indexRoutes = require("./routes/index.routes");
 app.use("/api", indexRoutes);
 
 const authRoutes = require("./routes/auth.routes");
-app.use("/auth", authRoutes);
+app.use("/api", authRoutes);
 
 const gamesRoutes = require("./routes/game.routes");
 app.use("/api", gamesRoutes);
