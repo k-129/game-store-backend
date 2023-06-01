@@ -28,7 +28,6 @@ router.get('/games', async(req,res)=>{
     try{
         let allGames = await Game.find();
         res.json(allGames);
-        console.log(allGames);
     }
     catch(error){
         res.json(error);
@@ -87,7 +86,7 @@ router.delete('/games/:gameId', async(req,res)=>{
 
     try{
         await Game.findByIdAndRemove(gameId);
-        res.json({message: `Project with ${gameId} is removed.`})
+        res.json({message: `Game with ${gameId} is removed.`})
     }
     catch(error){
         res.json(error);

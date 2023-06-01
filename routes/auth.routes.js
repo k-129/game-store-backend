@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
+const mongoose = require('mongoose');
+
+
 // ℹ️ Handles password encryption
 const bcrypt = require("bcrypt");
 
@@ -16,12 +19,20 @@ const saltRounds = 10;
 
 // POST /auth/signup  - Creates a new user in the database
 router.post("/signup", (req, res, next) => {
-  const { email, password, name } = req.body;
+  const { email, password, name, role } = req.body;
 
   // Check if email or password or name are provided as empty strings
-  if (email === "" || password === "" || name === "") {
-    res.status(400).json({ message: "Provide email, password and name" });
+  if (email === "") {
+    res.status(400).json({ message: "Provide email" });
     return;
+  } else if( password === "" ){
+    res.status(400).json({ message: "Provide password" });
+    return;
+
+  }else if(name === ""){
+    res.status(400).json({ message: "Provide name" });
+    return;
+
   }
 
   // This regular expression check that the email is of a valid format
@@ -46,7 +57,7 @@ router.post("/signup", (req, res, next) => {
     .then((foundUser) => {
       // If the user with the same email already exists, send an error response
       if (foundUser) {
-        res.status(400).json({ message: "User already exists." });
+        res.status(400).json({ message: "Email already exists." });
         return;
       }
 
@@ -56,15 +67,15 @@ router.post("/signup", (req, res, next) => {
 
       // Create the new user in the database
       // We return a pending promise, which allows us to chain another `then`
-      return User.create({ email, password: hashedPassword, name });
+      return User.create({ email, password: hashedPassword, name, role });
     })
     .then((createdUser) => {
       // Deconstruct the newly created user object to omit the password
       // We should never expose passwords publicly
-      const { email, name, _id } = createdUser;
+      const { email, name, _id, role } = createdUser;
 
       // Create a new object that doesn't expose the password
-      const user = { email, name, _id };
+      const user = { email, name, _id, role };
 
       // Send a json response containing the user object
       res.status(201).json({ user: user });
@@ -77,8 +88,11 @@ router.post("/login", (req, res, next) => {
   const { email, password } = req.body;
 
   // Check if email or password are provided as empty string
-  if (email === "" || password === "") {
-    res.status(400).json({ message: "Provide email and password." });
+  if (email === "") {
+    res.status(400).json({ message: "Provide email." });
+    return;
+  }else if(password === ""){
+    res.status(400).json({ message: "Provide password." });
     return;
   }
 
@@ -114,6 +128,38 @@ router.post("/login", (req, res, next) => {
       }
     })
     .catch((err) => next(err)); // In this case, we send error handling to the error handling middleware.
+});
+
+//GET /api/profile
+router.get('/profile/:userId', async(req,res)=>{
+  const {userId} = req.params;
+
+  try{
+      let user = await User.findById(userId);
+      res.json(user);
+  }
+  catch(error){
+      res.json(error);
+  }
+});
+//POST /api/edit-profile
+router.put('/edit-profile/:userId', async (req, res)=>{
+  const {userId} = req.params;
+  const {email, about_me, name} = req.body;
+
+  if(!mongoose.Types.ObjectId.isValid(userId)){
+     res.status(400).json({message: 'Specified Id is not valid'}); 
+     return; 
+  }
+
+  try{
+      let updatedUser = await User.findByIdAndUpdate(userId, 
+      {email, about_me, name}, {new: true});
+      res.json(updatedUser);
+  }
+  catch(error){
+      res.json(error);
+  }
 });
 
 // GET  /auth/verify  -  Used to verify JWT stored on the client

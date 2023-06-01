@@ -10,14 +10,26 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
+    about_me:{
+      type: String
+    },
     password: {
       type: String,
       required: [true, "Password is required."],
     },
-    userName: {
+    name: {
       type: String,
       required: [true, "Name is required."],
     },
+    role: { 
+      type:String, 
+      default: 'user',
+    },
+    bucket_list:[{
+      type: Schema.Types.ObjectId, 
+      ref: 'BucketList' 
+    }]
+    
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
