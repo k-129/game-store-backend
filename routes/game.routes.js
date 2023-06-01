@@ -7,7 +7,7 @@ const Game = require('../models/Game.model');
 
 // POST ROUTE that Creates a new game
 
-router.post('/games', async (req,res)=>{
+router.post('/add-game', async (req,res)=>{
     const {title, thumbnail, short_description, game_url, genre, platform, publisher, developer, release_date, freetogame_profile_url} = req.body;
 
     try{
@@ -57,7 +57,7 @@ router.get('/games/:gameId', async (req,res)=>{
 
 // PUT /api/projects/:projectId to update info of a Project
 
-router.put('/games/:gameId', async (req, res)=>{
+router.put('/games/edit/:gameId', async (req, res)=>{
     const {gameId} = req.params;
     const {title, thumbnail, short_description, game_url, genre, platform, publisher, developer, release_date, freetogame_profile_url} = req.body;
 
