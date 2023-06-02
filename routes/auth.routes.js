@@ -19,7 +19,7 @@ const saltRounds = 10;
 
 // POST /auth/signup  - Creates a new user in the database
 router.post("/signup", (req, res, next) => {
-  const { email, password, name, role } = req.body;
+  const { email, password, name, role, about_me} = req.body;
 
   // Check if email or password or name are provided as empty strings
   if (email === "") {
@@ -67,20 +67,41 @@ router.post("/signup", (req, res, next) => {
 
       // Create the new user in the database
       // We return a pending promise, which allows us to chain another `then`
-      return User.create({ email, password: hashedPassword, name, role });
+      return User.create({ email, password: hashedPassword, name, role, about_me });
     })
     .then((createdUser) => {
       // Deconstruct the newly created user object to omit the password
       // We should never expose passwords publicly
-      const { email, name, _id, role } = createdUser;
+      const { email, name, _id, role, about_me } = createdUser;
 
       // Create a new object that doesn't expose the password
-      const user = { email, name, _id, role };
+      const user = { email, name, _id, role, about_me };
 
       // Send a json response containing the user object
       res.status(201).json({ user: user });
     })
     .catch((err) => next(err)); // In this case, we send error handling to the error handling middleware.
+});
+
+// PUT /api/projects/:projectId to update info of a Project
+
+router.put('/profile/edit/:userId', async (req, res)=>{
+  const {userId} = req.params;
+  const {email, name, about_me} = req.body;
+
+  if(!mongoose.Types.ObjectId.isValid(userId)){
+     res.status(400).json({message: 'Specified Id is not valid'}); 
+     return; 
+  }
+
+  try{
+      let updatedUser = await User.findByIdAndUpdate(userId, 
+      {email, name, about_me}, {new: true});
+      res.json(updatedUser);
+  }
+  catch(error){
+      res.json(error);
+  }
 });
 
 // POST  /auth/login - Verifies email and password and returns a JWT
@@ -110,16 +131,18 @@ router.post("/login", (req, res, next) => {
 
       if (passwordCorrect) {
         // Deconstruct the user object to omit the password
-        const { _id, email, name } = foundUser;
+        const { _id, email } = foundUser;
 
         // Create an object that will be set as the token payload
-        const payload = { _id, email, name };
+        const payload = { _id, email };
 
         // Create a JSON Web Token and sign it
         const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
           algorithm: "HS256",
           expiresIn: "6h",
         });
+
+
 
         // Send the token as the response
         res.status(200).json({ authToken: authToken });
@@ -137,25 +160,6 @@ router.get('/profile/:userId', async(req,res)=>{
   try{
       let user = await User.findById(userId);
       res.json(user);
-  }
-  catch(error){
-      res.json(error);
-  }
-});
-//POST /api/edit-profile
-router.put('/edit-profile/:userId', async (req, res)=>{
-  const {userId} = req.params;
-  const {email, about_me, name} = req.body;
-
-  if(!mongoose.Types.ObjectId.isValid(userId)){
-     res.status(400).json({message: 'Specified Id is not valid'}); 
-     return; 
-  }
-
-  try{
-      let updatedUser = await User.findByIdAndUpdate(userId, 
-      {email, about_me, name}, {new: true});
-      res.json(updatedUser);
   }
   catch(error){
       res.json(error);

@@ -11,7 +11,8 @@ const userSchema = new Schema(
       trim: true,
     },
     about_me:{
-      type: String
+      type: String,
+      default: "Tell us about yourself",
     },
     password: {
       type: String,
