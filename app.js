@@ -24,6 +24,9 @@ app.use("/api", authRoutes);
 const gamesRoutes = require("./routes/game.routes");
 app.use("/api", gamesRoutes);
 
+const ironGamesRoutes = require("./routes/ironhackGames.routes");
+app.use("/api", ironGamesRoutes);
+
 
 
 module.exports = app;

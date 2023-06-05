@@ -3,16 +3,27 @@ const { Schema, model } = require("mongoose");
 // TODO: Please make sure you edit the User model to whatever makes sense in this case
 const userSchema = new Schema(
   {
-    name:{
+    title:{
       type: String,
+      required: true
     },
     description:{
       type:String,
     },
-    games:[{
-      type: Schema.Types.ObjectId, 
-      ref: 'Game' 
-    }]
+    game_url:{
+      type:String,
+    },
+    linkedin:{
+      type: String,
+    },
+    github:{
+      type:String
+    },
+    imgUrl:{
+      type:String,
+      default:""
+    }
+    
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
@@ -20,6 +31,6 @@ const userSchema = new Schema(
   }
 );
 
-const BucketList = model("BucketList", userSchema);
+const IronhackGames = model("IronhackGames", userSchema);
 
-module.exports = BucketList;
+module.exports = IronhackGames;

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
@@ -14,26 +14,23 @@ const jwt = require("jsonwebtoken");
 // Require the User model in order to interact with the database
 const User = require("../models/User.model");
 
-
 // How many rounds should bcrypt run the salt (default - 10 rounds)
 const saltRounds = 10;
 
 // POST /auth/signup  - Creates a new user in the database
 router.post("/signup", (req, res, next) => {
-  const { email, password, name, role, about_me} = req.body;
+  const { email, password, name, role, about_me } = req.body;
 
   // Check if email or password or name are provided as empty strings
   if (email === "") {
     res.status(400).json({ message: "Provide email" });
     return;
-  } else if( password === "" ){
+  } else if (password === "") {
     res.status(400).json({ message: "Provide password" });
     return;
-
-  }else if(name === ""){
+  } else if (name === "") {
     res.status(400).json({ message: "Provide name" });
     return;
-
   }
 
   // This regular expression check that the email is of a valid format
@@ -68,7 +65,13 @@ router.post("/signup", (req, res, next) => {
 
       // Create the new user in the database
       // We return a pending promise, which allows us to chain another `then`
-      return User.create({ email, password: hashedPassword, name, role, about_me });
+      return User.create({
+        email,
+        password: hashedPassword,
+        name,
+        role,
+        about_me,
+      });
     })
     .then((createdUser) => {
       // Deconstruct the newly created user object to omit the password
@@ -86,22 +89,24 @@ router.post("/signup", (req, res, next) => {
 
 // PUT /api/projects/:projectId to update info of a Project
 
-router.put('/profile/edit/:userId', async (req, res)=>{
-  const {userId} = req.params;
-  const {email, name, about_me} = req.body;
+router.put("/profile/edit/:userId", async (req, res) => {
+  const { userId } = req.params;
+  const { email, name, about_me } = req.body;
 
-  if(!mongoose.Types.ObjectId.isValid(userId)){
-     res.status(400).json({message: 'Specified Id is not valid'}); 
-     return; 
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    res.status(400).json({ message: "Specified Id is not valid" });
+    return;
   }
 
-  try{
-      let updatedUser = await User.findByIdAndUpdate(userId, 
-      {email, name, about_me}, {new: true});
-      res.json(updatedUser);
-  }
-  catch(error){
-      res.json(error);
+  try {
+    let updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { email, name, about_me },
+      { new: true }
+    );
+    res.json(updatedUser);
+  } catch (error) {
+    res.json(error);
   }
 });
 
@@ -113,7 +118,7 @@ router.post("/login", (req, res, next) => {
   if (email === "") {
     res.status(400).json({ message: "Provide email." });
     return;
-  }else if(password === ""){
+  } else if (password === "") {
     res.status(400).json({ message: "Provide password." });
     return;
   }
@@ -132,18 +137,16 @@ router.post("/login", (req, res, next) => {
 
       if (passwordCorrect) {
         // Deconstruct the user object to omit the password
-        const { _id, email } = foundUser;
+        const { _id, email, admin, about_me, name } = foundUser;
 
         // Create an object that will be set as the token payload
-        const payload = { _id, email };
+        const payload = { _id, email, admin, about_me, name };
 
         // Create a JSON Web Token and sign it
         const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
           algorithm: "HS256",
           expiresIn: "6h",
         });
-
-
 
         // Send the token as the response
         res.status(200).json({ authToken: authToken });
@@ -155,17 +158,16 @@ router.post("/login", (req, res, next) => {
 });
 
 // GET /api/profile
-router.get('/profile/:userId', async (req, res) => {
+router.get("/profile/:userId", async (req, res) => {
   const { userId } = req.params;
 
   try {
-    let user = await User.findById(userId);
+    let user = await User.findById(userId).populate("favs");
     res.json(user);
   } catch (error) {
     res.json(error);
   }
 });
-
 
 // GET  /auth/verify  -  Used to verify JWT stored on the client
 router.get("/verify", isAuthenticated, (req, res, next) => {

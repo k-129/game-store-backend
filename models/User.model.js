@@ -14,6 +14,10 @@ const userSchema = new Schema(
       type: String,
       default: "Tell us about yourself",
     },
+    imgUrl:{
+      type: String,
+      default: "",
+    },
     password: {
       type: String,
       required: [true, "Password is required."],
@@ -22,15 +26,18 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Name is required."],
     },
-    role: { 
-      type:String, 
-      default: 'user',
+    admin: { 
+      type:Boolean, 
+      default: false,
     },
-    bucket_list:[{
-      type: Schema.Types.ObjectId, 
-      ref: 'BucketList' 
-    }]
-    
+    favGames: {
+      type: Schema.Types.ObjectId,
+      ref: "Game"
+    },
+    favIhGames: {
+      type: Schema.Types.ObjectId,
+      ref: "IronhackGames"
+    },
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
