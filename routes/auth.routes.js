@@ -3,6 +3,7 @@ const router = express.Router();
 
 const mongoose = require('mongoose');
 
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 // ℹ️ Handles password encryption
 const bcrypt = require("bcrypt");
@@ -153,24 +154,23 @@ router.post("/login", (req, res, next) => {
     .catch((err) => next(err)); // In this case, we send error handling to the error handling middleware.
 });
 
-//GET /api/profile
-router.get('/profile/:userId', async(req,res)=>{
-  const {userId} = req.params;
+// GET /api/profile
+router.get('/profile/:userId', async (req, res) => {
+  const { userId } = req.params;
 
-  try{
-      let user = await User.findById(userId);
-      res.json(user);
-  }
-  catch(error){
-      res.json(error);
+  try {
+    let user = await User.findById(userId);
+    res.json(user);
+  } catch (error) {
+    res.json(error);
   }
 });
 
+
 // GET  /auth/verify  -  Used to verify JWT stored on the client
-router.get("/verify", (req, res, next) => {
+router.get("/verify", isAuthenticated, (req, res, next) => {
   // If JWT token is valid the payload gets decoded by the
   // isAuthenticated middleware and is made available on `req.payload`
-  console.log(`req.payload`, req.payload);
 
   // Send back the token payload object containing the user data
   res.status(200).json(req.payload);
