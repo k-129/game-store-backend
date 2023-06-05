@@ -31,13 +31,12 @@ const userSchema = new Schema(
       default: false,
     },
     favGames: {
-      type: Schema.Types.ObjectId,
-      ref: "Game"
-    },
-    favIhGames: {
-      type: Schema.Types.ObjectId,
-      ref: "IronhackGames"
-    },
+      type:[{
+        type: Schema.Types.ObjectId,
+        ref: "Game"
+    }]
+  }
+    
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`

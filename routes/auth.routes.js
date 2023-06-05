@@ -162,7 +162,7 @@ router.get("/profile/:userId", async (req, res) => {
   const { userId } = req.params;
 
   try {
-    let user = await User.findById(userId).populate("favs");
+    let user = await User.findById(userId);
     res.json(user);
   } catch (error) {
     res.json(error);

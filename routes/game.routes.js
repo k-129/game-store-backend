@@ -54,8 +54,26 @@ router.get('/games/:gameId', async (req,res)=>{
         res.json(error);
     }
 });
+// GET ROUTE to display specific genre
+router.get('/games/:gameId', async (req,res)=>{
+    const {gameId} = req.params;
 
-  
+    if(!gameId){
+        // status of 2xx is successful.
+        // error with 4xx is client-side.
+        // error with 5xx is server-side 
+        res.status(400).json({message: 'Specified id is not valid'});
+        return;
+    }
+
+    try{
+        let foundGame = await Game.findById(gameId);
+        res.status(200).json(foundGame);
+    }
+    catch(error){
+        res.json(error);
+    }
+});
 
 // PUT /api/projects/:projectId to update info of a Project
 
