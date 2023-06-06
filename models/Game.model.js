@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 // TODO: Please make sure you edit the User model to whatever makes sense in this case
-const userSchema = new Schema(
+const gameSchema = new Schema(
   {
     title: {
       type: String,
@@ -53,6 +53,6 @@ const userSchema = new Schema(
   }
 );
 
-const Game = model("Game", userSchema);
+const Game = model("Game", gameSchema);
 
 module.exports = Game;
