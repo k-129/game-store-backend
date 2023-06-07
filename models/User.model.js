@@ -10,11 +10,11 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-    about_me:{
+    about_me: {
       type: String,
-      default: "Tell us about yourself",
+      default: "",
     },
-    imgUrl:{
+    imgUrl: {
       type: String,
       default: "",
     },
@@ -26,17 +26,18 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Name is required."],
     },
-    admin: { 
-      type:Boolean, 
+    admin: {
+      type: Boolean,
       default: false,
     },
     favGames: {
-      type:[{
-        type: Schema.Types.ObjectId,
-        ref: "Game"
-    }]
-  }
-    
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Game",
+        },
+      ],
+    },
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`

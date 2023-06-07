@@ -91,7 +91,7 @@ router.post("/signup", (req, res, next) => {
 
 router.put("/profile/edit/:userId", async (req, res) => {
   const { userId } = req.params;
-  const { email, name, about_me } = req.body;
+  const { email, name, about_me, imgUrl } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     res.status(400).json({ message: "Specified Id is not valid" });
@@ -101,9 +101,10 @@ router.put("/profile/edit/:userId", async (req, res) => {
   try {
     let updatedUser = await User.findByIdAndUpdate(
       userId,
-      { email, name, about_me },
+      { email, name, about_me, imgUrl },
       { new: true }
     );
+    
     res.json(updatedUser);
   } catch (error) {
     res.json(error);
@@ -137,10 +138,10 @@ router.post("/login", (req, res, next) => {
 
       if (passwordCorrect) {
         // Deconstruct the user object to omit the password
-        const { _id, email, admin, about_me, name } = foundUser;
+        const { _id, email, admin, about_me, name, imgUrl } = foundUser;
 
         // Create an object that will be set as the token payload
-        const payload = { _id, email, admin, about_me, name };
+        const payload = { _id, email, admin, about_me, name, imgUrl };
 
         // Create a JSON Web Token and sign it
         const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
