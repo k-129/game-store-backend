@@ -169,6 +169,17 @@ router.get("/profile/:userId", async (req, res) => {
   }
 });
 
+router.get("/profile-fav/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    let user = await User.findById(userId);
+    res.json(user);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
 // GET  /auth/verify  -  Used to verify JWT stored on the client
 router.get("/verify", isAuthenticated, (req, res, next) => {
   // If JWT token is valid the payload gets decoded by the
@@ -178,20 +189,19 @@ router.get("/verify", isAuthenticated, (req, res, next) => {
   res.status(200).json(req.payload);
 });
 
-router.delete('/profile/:userId', async(req,res)=>{
+router.delete("/profile/:userId", async (req, res) => {
   const { userId } = req.params;
 
-  if(!mongoose.Types.ObjectId.isValid(userId)){
-      res.status(400).json({message: 'Specified Id is not valid'}); 
-      return; 
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    res.status(400).json({ message: "Specified Id is not valid" });
+    return;
   }
 
-  try{
-      await User.findByIdAndRemove(userId);
-      res.json({message: `User with ${userId} is removed.`})
-  }
-  catch(error){
-      res.json(error);
+  try {
+    await User.findByIdAndRemove(userId);
+    res.json({ message: `User with ${userId} is removed.` });
+  } catch (error) {
+    res.json(error);
   }
 });
 module.exports = router;
