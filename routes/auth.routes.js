@@ -104,7 +104,7 @@ router.put("/profile/edit/:userId", async (req, res) => {
       { email, name, about_me, imgUrl },
       { new: true }
     );
-    
+
     res.json(updatedUser);
   } catch (error) {
     res.json(error);
@@ -152,7 +152,10 @@ router.post("/login", (req, res, next) => {
         // Send the token as the response
         res.status(200).json({ authToken: authToken });
       } else {
-        res.status(401).json({ message: "Unable to authenticate the user" });
+        res.status(401).json({
+          message:
+            "Wrong Password!",
+        });
       }
     })
     .catch((err) => next(err)); // In this case, we send error handling to the error handling middleware.
